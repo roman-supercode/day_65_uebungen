@@ -1,20 +1,26 @@
 import fs from "fs";
 
 const promise = () => {
-    
-}
-fs.readFile("data.json", ((err, data) => {
-    if (err) return console.log("Etwas ist schief gelaufen", err);
+    return new Promise((resolve, reject) => {
 
-    const objects = JSON.parse(data); // Konviert in Objekt
-    let text = "";
+        fs.readFile("data.json", ((err, data) => {
+            if (err) return reject(err);
 
-    for (const obj of objects) {
-        text += `${obj.id} - ${obj.title}\n${obj.description}\n\n`;
-    }
+            const objects = JSON.parse(data); // Konviert in Objekt
+            let text = "";
 
-    fs.writeFile("data.txt", text, ((err) => {
-        if (err) return (console.log("ERROR", err));
-        console.log("JSON Konvertiert");
-    }));
-}));
+            for (const obj of objects) {
+                text += `${obj.id} - ${obj.title}\n${obj.description}\n\n`;
+            }
+
+            fs.writeFile("data.txt", text, ((err) => {
+                if (err) return reject(err);
+                else resolve();
+            }));
+        }));
+    });
+};
+
+promise()
+    .then(() => console.log("JSON Konvertiert"))
+    .catch(err => console.log("Etwas ist schief gelaufen", err));
